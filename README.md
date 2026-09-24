@@ -21,7 +21,7 @@ case .back(let card):
 
 ### Swift Package Manager
 
-在 Xcode 的 **File → Add Package Dependencies → Add Local** 中选择本目录 `IDCardSDK_Core`，将库产品加入 App target。发布到 Git 仓库后，也可使用仓库 URL 与版本标签集成。示例工程位于 `Examples/IDCardDemo/IDCardDemo.xcodeproj`。
+在 Xcode 的 **File → Add Package Dependencies** 中使用 `https://github.com/liqingfa/IDCardSDK_Core.git`，当前选择 `main` 分支；也可以通过 **Add Local** 选择本目录。仓库发布正式版本标签后，再改用版本规则。示例工程位于 `Examples/IDCardDemo/IDCardDemo.xcodeproj`。
 
 ### CocoaPods
 
@@ -36,7 +36,13 @@ target 'YourApp' do
 end
 ```
 
-执行 `pod install` 并打开生成的 `.xcworkspace`。可直接打开已验证的示例：`Examples/IDCardDemoPods/IDCardDemoPods.xcworkspace`。若要通过 Git URL 或 CocoaPods 私有源发布，需先把 podspec 中的示例 `homepage` 和 `source` 换成实际仓库地址，并确定正式授权方式。
+也可直接从当前 Git 分支安装：
+
+```ruby
+pod 'IDCardSDK_Core', :git => 'https://github.com/liqingfa/IDCardSDK_Core.git', :branch => 'main'
+```
+
+执行 `pod install` 并打开生成的 `.xcworkspace`。本地路径方式的示例位于 `Examples/IDCardDemoPods/IDCardDemoPods.xcworkspace`。目前仓库尚无 `1.0.0` 标签；正式版本完成真实样本验收后，建议创建标签，并将 SPM 与 CocoaPods 的安装方式切换到固定版本。
 
 ### 二进制包
 
