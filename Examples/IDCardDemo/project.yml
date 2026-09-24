@@ -1,0 +1,22 @@
+name: IDCardDemo
+options:
+  bundleIdPrefix: com.example
+packages:
+  IDCardSDK_Core:
+    path: ../..
+targets:
+  IDCardDemo:
+    type: application
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources:
+      - Sources
+    dependencies:
+      - package: IDCardSDK_Core
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.IDCardSDKDemo
+        SWIFT_VERSION: 5.9
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        TARGETED_DEVICE_FAMILY: "1,2"

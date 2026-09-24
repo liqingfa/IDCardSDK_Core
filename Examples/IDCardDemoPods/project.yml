@@ -1,0 +1,17 @@
+name: IDCardDemoPods
+options:
+  bundleIdPrefix: com.example
+targets:
+  IDCardDemoPods:
+    type: application
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources:
+      - ../IDCardDemo/Sources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.IDCardSDKDemoPods
+        SWIFT_VERSION: 5.9
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        TARGETED_DEVICE_FAMILY: "1,2"

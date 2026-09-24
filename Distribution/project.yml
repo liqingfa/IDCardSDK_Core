@@ -1,0 +1,16 @@
+name: IDCardSDKDistribution
+targets:
+  IDCardSDK_Core:
+    type: framework
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources:
+      - ../Sources/IDCardSDK_Core
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.IDCardSDKCore
+        SWIFT_VERSION: 5.9
+        GENERATE_INFOPLIST_FILE: YES
+        BUILD_LIBRARY_FOR_DISTRIBUTION: YES
+        DEFINES_MODULE: YES
+        SKIP_INSTALL: NO

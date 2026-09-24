@@ -1,0 +1,12 @@
+.build/
+DerivedData/
+DerivedData*/
+.swiftpm/
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+.DS_Store
+build/
+Examples/IDCardDemoPods/Pods/
+Examples/IDCardDemoPods/*.xcworkspace/
+Examples/IDCardDemoPods/Podfile.lock
