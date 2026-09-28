@@ -40,7 +40,14 @@ enum IDCardParser {
         guard validation.isValid, let validatedBirthday = validation.birthday else {
             throw IDCardSDKError.invalidIDNumber
         }
+        let idLine = lines.first { findIDNumber(in: [$0]) == idNumber }
+        // The number is printed along the bottom of the front side. Vision can still
+        // recognize its digits upside down, so reject that orientation before parsing.
+        guard idLine.map({ $0.boundingBox.midY < 0.45 }) ?? true else {
+            throw IDCardSDKError.parseFailed
+        }
         let name = value(after: "姓名", in: lines) ?? nearestValue(to: "姓名", in: input)
+            ?? value(after: "名", in: lines) ?? nearestValue(to: "名", in: input)
         let cleanName = (name ?? "").replacingOccurrences(of: #"[^\p{Han}·]"#, with: "", options: .regularExpression)
         guard !cleanName.isEmpty, cleanName.count <= 12 else { throw IDCardSDKError.parseFailed }
 
@@ -53,7 +60,7 @@ enum IDCardParser {
 
         let recognizedBirthday = dates(in: lines.map(\.text).joined(separator: " ")).first
         let birthday = recognizedBirthday ?? validatedBirthday
-        let address = parseAddress(lines)
+        let address = parseAddress(lines, idY: idLine?.boundingBox.midY)
         guard !address.isEmpty else { throw IDCardSDKError.parseFailed }
 
         let averageOCR = input.map(\.confidence).reduce(0, +) / Float(max(input.count, 1))
@@ -72,6 +79,7 @@ enum IDCardParser {
         let lines = ordered(input)
         let authority = (value(after: "签发机关", in: lines) ?? nearestValue(to: "签发机关", in: input) ?? "")
             .trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: #"^[：:·•\s]+"#, with: "", options: .regularExpression)
         guard !authority.isEmpty else { throw IDCardSDKError.parseFailed }
         let combined = lines.map(\.text).joined(separator: " ")
         let recognizedDates = dates(in: combined)
@@ -136,17 +144,29 @@ enum IDCardParser {
         }.min(by: { $0.boundingBox.minX < $1.boundingBox.minX })?.text
     }
 
-    private static func parseAddress(_ lines: [IDCardOCRObservation]) -> String {
-        guard let start = lines.firstIndex(where: { $0.text.contains("住址") }) else { return "" }
-        var parts: [String] = []
-        let startLine = lines[start]
-        let tail = startLine.text.components(separatedBy: "住址").dropFirst().joined()
-        if !tail.isEmpty { parts.append(tail) }
-        for line in lines.dropFirst(start + 1) {
-            if line.text.contains("公民身份号码") || line.text.contains("身份号码") ||
-                findIDNumber(in: [line]) != nil { break }
-            if line.boundingBox.midY < 0.16 { break }
-            parts.append(line.text)
+    private static func parseAddress(_ lines: [IDCardOCRObservation], idY: CGFloat?) -> String {
+        let anchor = lines.first { $0.text.contains("址") }
+        let birthdayY = lines.first { !dates(in: $0.text).isEmpty }?.boundingBox.midY
+        let upperY = anchor.map { $0.boundingBox.midY + 0.035 } ??
+            birthdayY.map { $0 - 0.045 } ?? 0.58
+        let lowerY = (idY ?? 0.16) + 0.04
+        guard upperY > lowerY else { return "" }
+
+        let parts = lines.compactMap { line -> String? in
+            let box = line.boundingBox
+            guard box.midY <= upperY, box.midY > lowerY,
+                  box.minX < 0.62,
+                  !line.text.contains("公民身份号码"),
+                  !line.text.contains("身份号码"),
+                  findIDNumber(in: [line]) == nil else { return nil }
+            if let anchor {
+                guard box.midY < anchor.boundingBox.midY - 0.035 ||
+                      box.minX >= anchor.boundingBox.minX - 0.01 else { return nil }
+                if line.text == anchor.text, let range = line.text.range(of: "址") {
+                    return String(line.text[range.upperBound...])
+                }
+            }
+            return line.text
         }
         return parts.joined().replacingOccurrences(of: #"\s|[：:]"#, with: "", options: .regularExpression)
     }

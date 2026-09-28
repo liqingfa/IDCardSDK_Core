@@ -30,6 +30,27 @@ final class IDCardSDKCoreTests: XCTestCase {
         XCTAssertThrowsError(try IDCardParser.parseFront(observations.dropLast().map { $0 }))
     }
 
+    func testFrontParserHandlesSplitAddressLabelAndRejectsUpsideDownLayout() throws {
+        let observations = [
+            o("娃名张三", 0.82), o("性别女民族汉", 0.70),
+            o("出生1949年12月31日", 0.60),
+            IDCardOCRObservation(text: "址", boundingBox: CGRect(x: 0.10, y: 0.43, width: 0.08, height: 0.06), confidence: 0.9),
+            IDCardOCRObservation(text: "安徽省某县某镇", boundingBox: CGRect(x: 0.22, y: 0.43, width: 0.36, height: 0.06), confidence: 0.9),
+            IDCardOCRObservation(text: "某村1号", boundingBox: CGRect(x: 0.22, y: 0.35, width: 0.25, height: 0.06), confidence: 0.9),
+            o("公民身份号码11010519491231002X", 0.10)
+        ]
+        XCTAssertEqual(try IDCardParser.parseFront(observations).address, "安徽省某县某镇某村1号")
+
+        let upsideDown = observations.map { observation in
+            let box = observation.boundingBox
+            return IDCardOCRObservation(
+                text: observation.text,
+                boundingBox: CGRect(x: box.minX, y: 1 - box.maxY, width: box.width, height: box.height),
+                confidence: observation.confidence)
+        }
+        XCTAssertThrowsError(try IDCardParser.parseFront(upsideDown))
+    }
+
     func testBackParserHandlesLongTermValidity() throws {
         let observations = [
             o("中华人民共和国居民身份证", 0.78),
@@ -42,6 +63,15 @@ final class IDCardSDKCoreTests: XCTestCase {
         XCTAssertEqual(fields.validFrom, "2015-01-01")
         XCTAssertNil(fields.validTo)
         XCTAssertTrue(fields.isLongTerm)
+    }
+
+    func testBackParserRemovesLeadingOCRSeparatorFromAuthority() throws {
+        let observations = [
+            o("中华人民共和国居民身份证", 0.78),
+            o("签发机关 ·北京市公安局", 0.35),
+            o("有效期限2015.01.01-长期", 0.20)
+        ]
+        XCTAssertEqual(try IDCardParser.parseBack(observations).authority, "北京市公安局")
     }
 
     func testSyntheticFrontImageThroughVision() async throws {

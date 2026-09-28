@@ -14,7 +14,7 @@
 
 /* Begin PBXFileReference section */
 		24917EAE5864D8B1C58F5CDB /* IDCardDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDCardDemoApp.swift; sourceTree = "<group>"; };
-		545F31FDABCE1B3808F3C64C /* IDCardDemo.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = IDCardDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		545F31FDABCE1B3808F3C64C /* IDCardDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IDCardDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1846C23B60C34A01BE4BF47 /* IDCardSDK_Core */ = {isa = PBXFileReference; lastKnownFileType = folder; name = IDCardSDK_Core; path = ../..; sourceTree = SOURCE_ROOT; };
 		D574F5DB1726E1C2BF59EB9A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -95,8 +95,6 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
-				TargetAttributes = {
-				};
 			};
 			buildConfigurationList = 93397798ACAAF8DDBBB62399 /* Build configuration list for PBXProject "IDCardDemo" */;
 			developmentRegion = en;
@@ -200,6 +198,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = 76P8JP4LX3;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -274,6 +273,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = 76P8JP4LX3;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
